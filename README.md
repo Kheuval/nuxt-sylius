@@ -1,0 +1,1 @@
+Nuxt 3 starter app with Tailwind, eslint, prettier and Playwright

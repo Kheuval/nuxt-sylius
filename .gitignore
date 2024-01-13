@@ -1,0 +1,13 @@
+node_modules
+*.log*
+.nuxt
+.nitro
+.cache
+.output
+.data
+.env
+dist
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

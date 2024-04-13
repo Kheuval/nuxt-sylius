@@ -22,12 +22,8 @@ lint/tsc: ## Lint project with Typescript
 
 .PHONY: tests
 tests: ## Run tests
-	make test/e2e
-
-.PHONY: test/e2e
-test/e2e: ## Run Playwright tests
-	@echo "👉 ${GREEN}Testing${END} with Playwright"
-	. "$(NVM_DIR)/nvm.sh" && nvm exec pnpm run e2e
+	@echo "👉 ${GREEN}Testing...${END}"
+	. "$(NVM_DIR)/nvm.sh" && pnpm vitest run
 
 .PHONY: Start dev server
 dev: ## Start the dev server with env variables from .env.local

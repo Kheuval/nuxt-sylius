@@ -1,9 +1,15 @@
-import { test, expect } from "@playwright/test";
+import { setup, createPage, url } from "@nuxt/test-utils/e2e";
+import { describe, test, expect } from "vitest";
 
-test('Index page contains a heading with "Title" as content', async ({
-  page,
-}) => {
-  await page.goto("http://localhost:3000/");
+describe("app", async () => {
+  await setup();
 
-  await expect(page.getByRole("heading", { name: "Title" })).toBeVisible();
+  test('Index page contains a heading with "Title" as content', async () => {
+    const page = await createPage();
+
+    await page.goto(url("/"), { waitUntil: "hydration" });
+    const title = await page.textContent("h1");
+
+    expect(title).toBe("Title");
+  });
 });

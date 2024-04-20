@@ -1,0 +1,1187 @@
+generator client {
+    provider      = "prisma-client-js"
+    binaryTargets = ["native"]
+}
+
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+model messenger_messages {
+    id           BigInt    @id @default(autoincrement())
+    body         String    @db.LongText
+    headers      String    @db.LongText
+    queue_name   String    @db.VarChar(190)
+    created_at   DateTime  @db.DateTime(0)
+    available_at DateTime  @db.DateTime(0)
+    delivered_at DateTime? @db.DateTime(0)
+
+    @@index([delivered_at], map: "IDX_75EA56E016BA31DB")
+    @@index([available_at], map: "IDX_75EA56E0E3BD61CE")
+    @@index([queue_name], map: "IDX_75EA56E0FB7336F0")
+}
+
+model sylius_address {
+    id                                                                 Int              @id @default(autoincrement())
+    customer_id                                                        Int?
+    first_name                                                         String           @db.VarChar(255)
+    last_name                                                          String           @db.VarChar(255)
+    phone_number                                                       String?          @db.VarChar(255)
+    street                                                             String           @db.VarChar(255)
+    company                                                            String?          @db.VarChar(255)
+    city                                                               String           @db.VarChar(255)
+    postcode                                                           String           @db.VarChar(255)
+    created_at                                                         DateTime         @db.DateTime(0)
+    updated_at                                                         DateTime?        @db.DateTime(0)
+    country_code                                                       String           @db.VarChar(255)
+    province_code                                                      String?          @db.VarChar(255)
+    province_name                                                      String?          @db.VarChar(255)
+    sylius_customer_sylius_address_customer_idTosylius_customer        sylius_customer? @relation("sylius_address_customer_idTosylius_customer", fields: [customer_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_B97FF0589395C3F3")
+    sylius_customer_sylius_customer_default_address_idTosylius_address sylius_customer? @relation("sylius_customer_default_address_idTosylius_address")
+    sylius_order_sylius_order_shipping_address_idTosylius_address      sylius_order?    @relation("sylius_order_shipping_address_idTosylius_address")
+    sylius_order_sylius_order_billing_address_idTosylius_address       sylius_order?    @relation("sylius_order_billing_address_idTosylius_address")
+
+    @@index([customer_id], map: "IDX_B97FF0589395C3F3")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_address_log_entries {
+    id           Int      @id @default(autoincrement())
+    action       String   @db.VarChar(255)
+    logged_at    DateTime @db.DateTime(0)
+    object_id    String?  @db.VarChar(64)
+    object_class String   @db.VarChar(255)
+    version      Int
+    data         String   @db.LongText
+    username     String?  @db.VarChar(255)
+}
+
+model sylius_adjustment {
+    id                     Int                     @id @default(autoincrement())
+    order_id               Int?
+    order_item_id          Int?
+    order_item_unit_id     Int?
+    type                   String                  @db.VarChar(255)
+    label                  String?                 @db.VarChar(255)
+    amount                 Int
+    is_neutral             Boolean
+    is_locked              Boolean
+    origin_code            String?                 @db.VarChar(255)
+    created_at             DateTime                @db.DateTime(0)
+    updated_at             DateTime?               @db.DateTime(0)
+    shipment_id            Int?
+    details                Json
+    sylius_shipment        sylius_shipment?        @relation(fields: [shipment_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ACA6E0F27BE036FC")
+    sylius_order           sylius_order?           @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ACA6E0F28D9F6D38")
+    sylius_order_item      sylius_order_item?      @relation(fields: [order_item_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ACA6E0F2E415FB15")
+    sylius_order_item_unit sylius_order_item_unit? @relation(fields: [order_item_unit_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_ACA6E0F2F720C233")
+
+    @@index([shipment_id], map: "IDX_ACA6E0F27BE036FC")
+    @@index([order_id], map: "IDX_ACA6E0F28D9F6D38")
+    @@index([order_item_id], map: "IDX_ACA6E0F2E415FB15")
+    @@index([order_item_unit_id], map: "IDX_ACA6E0F2F720C233")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_admin_user {
+    id                       Int                  @id @default(autoincrement())
+    username                 String?              @db.VarChar(255)
+    username_canonical       String?              @db.VarChar(255)
+    enabled                  Boolean
+    salt                     String               @db.VarChar(255)
+    password                 String?              @db.VarChar(255)
+    last_login               DateTime?            @db.DateTime(0)
+    password_reset_token     String?              @db.VarChar(255)
+    password_requested_at    DateTime?            @db.DateTime(0)
+    email_verification_token String?              @db.VarChar(255)
+    verified_at              DateTime?            @db.DateTime(0)
+    locked                   Boolean
+    expires_at               DateTime?            @db.DateTime(0)
+    credentials_expire_at    DateTime?            @db.DateTime(0)
+    roles                    String               @db.LongText
+    email                    String?              @db.VarChar(255)
+    email_canonical          String?              @db.VarChar(255)
+    created_at               DateTime             @db.DateTime(0)
+    updated_at               DateTime?            @db.DateTime(0)
+    first_name               String?              @db.VarChar(255)
+    last_name                String?              @db.VarChar(255)
+    locale_code              String               @db.VarChar(12)
+    encoder_name             String?              @db.VarChar(255)
+    sylius_avatar_image      sylius_avatar_image?
+}
+
+model sylius_avatar_image {
+    id                Int               @id @default(autoincrement())
+    owner_id          Int               @unique(map: "UNIQ_1068A3A97E3C61F9")
+    type              String?           @db.VarChar(255)
+    path              String            @db.VarChar(255)
+    sylius_admin_user sylius_admin_user @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1068A3A97E3C61F9")
+}
+
+model sylius_catalog_promotion {
+    id                                        Int                                         @id @default(autoincrement())
+    code                                      String                                      @unique(map: "UNIQ_1055865077153098") @db.VarChar(255)
+    name                                      String                                      @db.VarChar(255)
+    enabled                                   Boolean
+    start_date                                DateTime?                                   @db.DateTime(0)
+    end_date                                  DateTime?                                   @db.DateTime(0)
+    state                                     String                                      @db.VarChar(255)
+    priority                                  Int                                         @default(0)
+    exclusive                                 Boolean                                     @default(false)
+    sylius_catalog_promotion_action           sylius_catalog_promotion_action[]
+    sylius_catalog_promotion_channels         sylius_catalog_promotion_channels[]
+    sylius_catalog_promotion_scope            sylius_catalog_promotion_scope[]
+    sylius_catalog_promotion_translation      sylius_catalog_promotion_translation[]
+    sylius_channel_pricing_catalog_promotions sylius_channel_pricing_catalog_promotions[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_catalog_promotion_action {
+    id                       Int                       @id @default(autoincrement())
+    catalog_promotion_id     Int?
+    type                     String                    @db.VarChar(255)
+    configuration            String                    @db.LongText
+    sylius_catalog_promotion sylius_catalog_promotion? @relation(fields: [catalog_promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_F529624722E2CB5A")
+
+    @@index([catalog_promotion_id], map: "IDX_F529624722E2CB5A")
+}
+
+model sylius_catalog_promotion_channels {
+    catalog_promotion_id     Int
+    channel_id               Int
+    sylius_catalog_promotion sylius_catalog_promotion @relation(fields: [catalog_promotion_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_48E9AE7622E2CB5A")
+    sylius_channel           sylius_channel           @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_48E9AE7672F5A1AA")
+
+    @@id([catalog_promotion_id, channel_id])
+    @@index([catalog_promotion_id], map: "IDX_48E9AE7622E2CB5A")
+    @@index([channel_id], map: "IDX_48E9AE7672F5A1AA")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_catalog_promotion_scope {
+    id                       Int                       @id @default(autoincrement())
+    promotion_id             Int?
+    type                     String                    @db.VarChar(255)
+    configuration            String                    @db.LongText
+    sylius_catalog_promotion sylius_catalog_promotion? @relation(fields: [promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_584AA86A139DF194")
+
+    @@index([promotion_id], map: "IDX_584AA86A139DF194")
+}
+
+model sylius_catalog_promotion_translation {
+    id                       Int                      @id @default(autoincrement())
+    translatable_id          Int
+    label                    String?                  @db.VarChar(255)
+    description              String?                  @db.VarChar(255)
+    locale                   String                   @db.VarChar(255)
+    sylius_catalog_promotion sylius_catalog_promotion @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_BA065D3C2C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_catalog_promotion_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_BA065D3C2C2AC5D3")
+}
+
+model sylius_channel {
+    id                                    Int                                 @id @default(autoincrement())
+    default_locale_id                     Int
+    base_currency_id                      Int
+    default_tax_zone_id                   Int?
+    code                                  String                              @unique(map: "UNIQ_16C8119E77153098") @db.VarChar(255)
+    name                                  String                              @db.VarChar(255)
+    color                                 String?                             @db.VarChar(255)
+    description                           String?                             @db.LongText
+    enabled                               Boolean
+    hostname                              String?                             @db.VarChar(255)
+    created_at                            DateTime                            @db.DateTime(0)
+    updated_at                            DateTime?                           @db.DateTime(0)
+    theme_name                            String?                             @db.VarChar(255)
+    tax_calculation_strategy              String                              @db.VarChar(255)
+    contact_email                         String?                             @db.VarChar(255)
+    skipping_shipping_step_allowed        Boolean
+    account_verification_required         Boolean
+    skipping_payment_step_allowed         Boolean
+    shop_billing_data_id                  Int?                                @unique(map: "UNIQ_16C8119EB5282EDF")
+    menu_taxon_id                         Int?
+    contact_phone_number                  String?                             @db.VarChar(255)
+    shipping_address_in_checkout_required Boolean                             @default(false)
+    sylius_catalog_promotion_channels     sylius_catalog_promotion_channels[]
+    sylius_currency                       sylius_currency                     @relation(fields: [base_currency_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_16C8119E3101778E")
+    sylius_locale                         sylius_locale                       @relation(fields: [default_locale_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_16C8119E743BF776")
+    sylius_zone                           sylius_zone?                        @relation(fields: [default_tax_zone_id], references: [id], onUpdate: NoAction, map: "FK_16C8119EA978C17")
+    sylius_shop_billing_data              sylius_shop_billing_data?           @relation(fields: [shop_billing_data_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_16C8119EB5282EDF")
+    sylius_taxon                          sylius_taxon?                       @relation(fields: [menu_taxon_id], references: [id], onUpdate: NoAction, map: "FK_16C8119EF242B1E6")
+    sylius_channel_countries              sylius_channel_countries[]
+    sylius_channel_currencies             sylius_channel_currencies[]
+    sylius_channel_locales                sylius_channel_locales[]
+    sylius_order                          sylius_order[]
+    sylius_payment_method_channels        sylius_payment_method_channels[]
+    sylius_product_channels               sylius_product_channels[]
+    sylius_promotion_channels             sylius_promotion_channels[]
+    sylius_shipping_method_channels       sylius_shipping_method_channels[]
+
+    @@index([base_currency_id], map: "IDX_16C8119E3101778E")
+    @@index([default_locale_id], map: "IDX_16C8119E743BF776")
+    @@index([default_tax_zone_id], map: "IDX_16C8119EA978C17")
+    @@index([hostname], map: "IDX_16C8119EE551C011")
+    @@index([menu_taxon_id], map: "IDX_16C8119EF242B1E6")
+}
+
+model sylius_channel_countries {
+    channel_id     Int
+    country_id     Int
+    sylius_channel sylius_channel @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_D96E51AE72F5A1AA")
+    sylius_country sylius_country @relation(fields: [country_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_D96E51AEF92F3E70")
+
+    @@id([channel_id, country_id])
+    @@index([channel_id], map: "IDX_D96E51AE72F5A1AA")
+    @@index([country_id], map: "IDX_D96E51AEF92F3E70")
+}
+
+model sylius_channel_currencies {
+    channel_id      Int
+    currency_id     Int
+    sylius_currency sylius_currency @relation(fields: [currency_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AE491F9338248176")
+    sylius_channel  sylius_channel  @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_AE491F9372F5A1AA")
+
+    @@id([channel_id, currency_id])
+    @@index([currency_id], map: "IDX_AE491F9338248176")
+    @@index([channel_id], map: "IDX_AE491F9372F5A1AA")
+}
+
+model sylius_channel_locales {
+    channel_id     Int
+    locale_id      Int
+    sylius_channel sylius_channel @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_786B7A8472F5A1AA")
+    sylius_locale  sylius_locale  @relation(fields: [locale_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_786B7A84E559DFD1")
+
+    @@id([channel_id, locale_id])
+    @@index([channel_id], map: "IDX_786B7A8472F5A1AA")
+    @@index([locale_id], map: "IDX_786B7A84E559DFD1")
+}
+
+model sylius_channel_pricing {
+    id                                        Int                                         @id @default(autoincrement())
+    product_variant_id                        Int
+    price                                     Int?
+    channel_code                              String                                      @db.VarChar(255)
+    original_price                            Int?
+    minimum_price                             Int?                                        @default(0)
+    sylius_product_variant                    sylius_product_variant                      @relation(fields: [product_variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_7801820CA80EF684")
+    sylius_channel_pricing_catalog_promotions sylius_channel_pricing_catalog_promotions[]
+
+    @@unique([product_variant_id, channel_code], map: "product_variant_channel_idx")
+    @@index([product_variant_id], map: "IDX_7801820CA80EF684")
+}
+
+model sylius_channel_pricing_catalog_promotions {
+    channel_pricing_id       Int
+    catalog_promotion_id     Int
+    sylius_catalog_promotion sylius_catalog_promotion @relation(fields: [catalog_promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_9F52FF5122E2CB5A")
+    sylius_channel_pricing   sylius_channel_pricing   @relation(fields: [channel_pricing_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_9F52FF513EADFFE5")
+
+    @@id([channel_pricing_id, catalog_promotion_id])
+    @@index([catalog_promotion_id], map: "IDX_9F52FF5122E2CB5A")
+    @@index([channel_pricing_id], map: "IDX_9F52FF513EADFFE5")
+}
+
+model sylius_country {
+    id                       Int                        @id @default(autoincrement())
+    code                     String                     @unique(map: "UNIQ_E74256BF77153098") @db.VarChar(2)
+    enabled                  Boolean
+    sylius_channel_countries sylius_channel_countries[]
+    sylius_province          sylius_province[]
+
+    @@index([code], map: "IDX_E74256BF77153098")
+}
+
+model sylius_currency {
+    id                                                                         Int                         @id @default(autoincrement())
+    code                                                                       String                      @unique(map: "UNIQ_96EDD3D077153098") @db.VarChar(3)
+    created_at                                                                 DateTime                    @db.DateTime(0)
+    updated_at                                                                 DateTime?                   @db.DateTime(0)
+    sylius_channel                                                             sylius_channel[]
+    sylius_channel_currencies                                                  sylius_channel_currencies[]
+    sylius_exchange_rate_sylius_exchange_rate_source_currencyTosylius_currency sylius_exchange_rate[]      @relation("sylius_exchange_rate_source_currencyTosylius_currency")
+    sylius_exchange_rate_sylius_exchange_rate_target_currencyTosylius_currency sylius_exchange_rate[]      @relation("sylius_exchange_rate_target_currencyTosylius_currency")
+}
+
+model sylius_customer {
+    id                                                                Int                     @id @default(autoincrement())
+    customer_group_id                                                 Int?
+    default_address_id                                                Int?                    @unique(map: "UNIQ_7E82D5E6BD94FB16")
+    email                                                             String                  @unique(map: "UNIQ_7E82D5E6E7927C74") @db.VarChar(255)
+    email_canonical                                                   String                  @unique(map: "UNIQ_7E82D5E6A0D96FBF") @db.VarChar(255)
+    first_name                                                        String?                 @db.VarChar(255)
+    last_name                                                         String?                 @db.VarChar(255)
+    birthday                                                          DateTime?               @db.DateTime(0)
+    gender                                                            String                  @default("u") @db.VarChar(1)
+    created_at                                                        DateTime                @db.DateTime(0)
+    updated_at                                                        DateTime?               @db.DateTime(0)
+    phone_number                                                      String?                 @db.VarChar(255)
+    subscribed_to_newsletter                                          Boolean
+    sylius_address_sylius_address_customer_idTosylius_customer        sylius_address[]        @relation("sylius_address_customer_idTosylius_customer")
+    sylius_address_sylius_customer_default_address_idTosylius_address sylius_address?         @relation("sylius_customer_default_address_idTosylius_address", fields: [default_address_id], references: [id], onUpdate: NoAction, map: "FK_7E82D5E6BD94FB16")
+    sylius_customer_group                                             sylius_customer_group?  @relation(fields: [customer_group_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_7E82D5E6D2919A68")
+    sylius_order                                                      sylius_order[]
+    sylius_product_review                                             sylius_product_review[]
+    sylius_shop_user                                                  sylius_shop_user?
+
+    @@index([customer_group_id], map: "IDX_7E82D5E6D2919A68")
+    @@index([created_at(sort: Desc)], map: "created_at_index")
+}
+
+model sylius_customer_group {
+    id              Int               @id @default(autoincrement())
+    code            String            @unique(map: "UNIQ_7FCF9B0577153098") @db.VarChar(255)
+    name            String            @db.VarChar(255)
+    sylius_customer sylius_customer[]
+}
+
+model sylius_exchange_rate {
+    id                                                                    Int             @id @default(autoincrement())
+    source_currency                                                       Int
+    target_currency                                                       Int
+    ratio                                                                 Decimal         @db.Decimal(10, 5)
+    created_at                                                            DateTime        @db.DateTime(0)
+    updated_at                                                            DateTime?       @db.DateTime(0)
+    sylius_currency_sylius_exchange_rate_source_currencyTosylius_currency sylius_currency @relation("sylius_exchange_rate_source_currencyTosylius_currency", fields: [source_currency], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_5F52B852A76BEED")
+    sylius_currency_sylius_exchange_rate_target_currencyTosylius_currency sylius_currency @relation("sylius_exchange_rate_target_currencyTosylius_currency", fields: [target_currency], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_5F52B85B3FD5856")
+
+    @@unique([source_currency, target_currency], map: "UNIQ_5F52B852A76BEEDB3FD5856")
+    @@index([source_currency], map: "IDX_5F52B852A76BEED")
+    @@index([target_currency], map: "IDX_5F52B85B3FD5856")
+}
+
+model sylius_gateway_config {
+    id                    Int                     @id @default(autoincrement())
+    config                Json
+    gateway_name          String                  @db.VarChar(255)
+    factory_name          String                  @db.VarChar(255)
+    sylius_payment_method sylius_payment_method[]
+}
+
+model sylius_locale {
+    id                     Int                      @id @default(autoincrement())
+    code                   String                   @unique(map: "UNIQ_7BA1286477153098") @db.VarChar(12)
+    created_at             DateTime                 @db.DateTime(0)
+    updated_at             DateTime?                @db.DateTime(0)
+    sylius_channel         sylius_channel[]
+    sylius_channel_locales sylius_channel_locales[]
+}
+
+model sylius_migrations {
+    version        String    @id
+    executed_at    DateTime? @db.DateTime(0)
+    execution_time Int?
+}
+
+model sylius_order {
+    id                                                              Int                      @id @default(autoincrement())
+    shipping_address_id                                             Int?                     @unique(map: "UNIQ_6196A1F94D4CFF2B")
+    billing_address_id                                              Int?                     @unique(map: "UNIQ_6196A1F979D0C0E4")
+    channel_id                                                      Int?
+    promotion_coupon_id                                             Int?
+    customer_id                                                     Int?
+    number                                                          String?                  @unique(map: "UNIQ_6196A1F996901F54") @db.VarChar(255)
+    notes                                                           String?                  @db.LongText
+    state                                                           String                   @db.VarChar(255)
+    checkout_completed_at                                           DateTime?                @db.DateTime(0)
+    items_total                                                     Int
+    adjustments_total                                               Int
+    total                                                           Int
+    created_at                                                      DateTime                 @db.DateTime(0)
+    updated_at                                                      DateTime?                @db.DateTime(0)
+    currency_code                                                   String                   @db.VarChar(3)
+    locale_code                                                     String                   @db.VarChar(255)
+    checkout_state                                                  String                   @db.VarChar(255)
+    payment_state                                                   String                   @db.VarChar(255)
+    shipping_state                                                  String                   @db.VarChar(255)
+    token_value                                                     String?                  @unique(map: "UNIQ_6196A1F9BEA95C75") @db.VarChar(255)
+    customer_ip                                                     String?                  @db.VarChar(255)
+    created_by_guest                                                Boolean                  @default(true)
+    sylius_adjustment                                               sylius_adjustment[]
+    sylius_promotion_coupon                                         sylius_promotion_coupon? @relation(fields: [promotion_coupon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6196A1F917B24436")
+    sylius_address_sylius_order_shipping_address_idTosylius_address sylius_address?          @relation("sylius_order_shipping_address_idTosylius_address", fields: [shipping_address_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6196A1F94D4CFF2B")
+    sylius_channel                                                  sylius_channel?          @relation(fields: [channel_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6196A1F972F5A1AA")
+    sylius_address_sylius_order_billing_address_idTosylius_address  sylius_address?          @relation("sylius_order_billing_address_idTosylius_address", fields: [billing_address_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6196A1F979D0C0E4")
+    sylius_customer                                                 sylius_customer?         @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_6196A1F99395C3F3")
+    sylius_order_item                                               sylius_order_item[]
+    sylius_payment                                                  sylius_payment[]
+    sylius_promotion_order                                          sylius_promotion_order[]
+    sylius_shipment                                                 sylius_shipment[]
+
+    @@index([promotion_coupon_id], map: "IDX_6196A1F917B24436")
+    @@index([channel_id], map: "IDX_6196A1F972F5A1AA")
+    @@index([customer_id], map: "IDX_6196A1F99395C3F3")
+    @@index([state, updated_at], map: "IDX_6196A1F9A393D2FB43625D9F")
+}
+
+model sylius_order_item {
+    id                     Int                      @id @default(autoincrement())
+    order_id               Int
+    variant_id             Int
+    quantity               Int
+    unit_price             Int
+    units_total            Int
+    adjustments_total      Int
+    total                  Int
+    is_immutable           Boolean
+    product_name           String?                  @db.VarChar(255)
+    variant_name           String?                  @db.VarChar(255)
+    version                Int                      @default(1)
+    original_unit_price    Int?
+    sylius_adjustment      sylius_adjustment[]
+    sylius_product_variant sylius_product_variant   @relation(fields: [variant_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_77B587ED3B69A9AF")
+    sylius_order           sylius_order             @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_77B587ED8D9F6D38")
+    sylius_order_item_unit sylius_order_item_unit[]
+
+    @@index([variant_id], map: "IDX_77B587ED3B69A9AF")
+    @@index([order_id], map: "IDX_77B587ED8D9F6D38")
+}
+
+model sylius_order_item_unit {
+    id                Int                 @id @default(autoincrement())
+    order_item_id     Int
+    shipment_id       Int?
+    adjustments_total Int
+    created_at        DateTime            @db.DateTime(0)
+    updated_at        DateTime?           @db.DateTime(0)
+    sylius_adjustment sylius_adjustment[]
+    sylius_shipment   sylius_shipment?    @relation(fields: [shipment_id], references: [id], onUpdate: NoAction, map: "FK_82BF226E7BE036FC")
+    sylius_order_item sylius_order_item   @relation(fields: [order_item_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_82BF226EE415FB15")
+
+    @@index([shipment_id], map: "IDX_82BF226E7BE036FC")
+    @@index([order_item_id], map: "IDX_82BF226EE415FB15")
+}
+
+model sylius_order_sequence {
+    id      Int @id @default(autoincrement())
+    idx     Int
+    version Int @default(1)
+}
+
+model sylius_payment {
+    id                    Int                    @id @default(autoincrement())
+    method_id             Int?
+    order_id              Int
+    currency_code         String                 @db.VarChar(3)
+    amount                Int
+    state                 String                 @db.VarChar(255)
+    details               Json
+    created_at            DateTime               @db.DateTime(0)
+    updated_at            DateTime?              @db.DateTime(0)
+    sylius_payment_method sylius_payment_method? @relation(fields: [method_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_D9191BD419883967")
+    sylius_order          sylius_order           @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_D9191BD48D9F6D38")
+
+    @@index([method_id], map: "IDX_D9191BD419883967")
+    @@index([order_id], map: "IDX_D9191BD48D9F6D38")
+}
+
+model sylius_payment_method {
+    id                                       Int                                        @id @default(autoincrement())
+    code                                     String                                     @unique(map: "UNIQ_A75B0B0D77153098") @db.VarChar(255)
+    environment                              String?                                    @db.VarChar(255)
+    is_enabled                               Boolean
+    position                                 Int
+    created_at                               DateTime                                   @db.DateTime(0)
+    updated_at                               DateTime?                                  @db.DateTime(0)
+    gateway_config_id                        Int?
+    sylius_payment                           sylius_payment[]
+    sylius_gateway_config                    sylius_gateway_config?                     @relation(fields: [gateway_config_id], references: [id], onUpdate: NoAction, map: "FK_A75B0B0DF23D6140")
+    sylius_payment_method_channels           sylius_payment_method_channels[]
+    sylius_payment_method_translation        sylius_payment_method_translation[]
+    sylius_paypal_plugin_pay_pal_credentials sylius_paypal_plugin_pay_pal_credentials[]
+
+    @@index([gateway_config_id], map: "IDX_A75B0B0DF23D6140")
+}
+
+model sylius_payment_method_channels {
+    payment_method_id     Int
+    channel_id            Int
+    sylius_payment_method sylius_payment_method @relation(fields: [payment_method_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_543AC0CC5AA1164F")
+    sylius_channel        sylius_channel        @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_543AC0CC72F5A1AA")
+
+    @@id([payment_method_id, channel_id])
+    @@index([payment_method_id], map: "IDX_543AC0CC5AA1164F")
+    @@index([channel_id], map: "IDX_543AC0CC72F5A1AA")
+}
+
+model sylius_payment_method_translation {
+    id                    Int                   @id @default(autoincrement())
+    translatable_id       Int
+    name                  String                @db.VarChar(255)
+    description           String?               @db.LongText
+    instructions          String?               @db.LongText
+    locale                String                @db.VarChar(255)
+    sylius_payment_method sylius_payment_method @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_966BE3A12C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_payment_method_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_966BE3A12C2AC5D3")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_payment_security_token {
+    hash         String  @id @db.VarChar(255)
+    details      String? @db.LongText
+    after_url    String? @db.LongText
+    target_url   String  @db.LongText
+    gateway_name String  @db.VarChar(255)
+}
+
+model sylius_paypal_plugin_pay_pal_credentials {
+    id                    String                 @id @db.VarChar(255)
+    payment_method_id     Int?
+    access_token          String                 @db.VarChar(255)
+    creation_time         DateTime               @db.DateTime(0)
+    expiration_time       DateTime               @db.DateTime(0)
+    sylius_payment_method sylius_payment_method? @relation(fields: [payment_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_C56F54AD5AA1164F")
+
+    @@index([payment_method_id], map: "IDX_C56F54AD5AA1164F")
+}
+
+model sylius_product {
+    id                                 Int                                  @id @default(autoincrement())
+    main_taxon_id                      Int?
+    code                               String                               @unique(map: "UNIQ_677B9B7477153098") @db.VarChar(255)
+    created_at                         DateTime                             @db.DateTime(0)
+    updated_at                         DateTime?                            @db.DateTime(0)
+    enabled                            Boolean
+    variant_selection_method           String                               @db.VarChar(255)
+    average_rating                     Float                                @default(0)
+    sylius_taxon                       sylius_taxon?                        @relation(fields: [main_taxon_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_677B9B74731E505")
+    sylius_product_association         sylius_product_association[]
+    sylius_product_association_product sylius_product_association_product[]
+    sylius_product_attribute_value     sylius_product_attribute_value[]
+    sylius_product_channels            sylius_product_channels[]
+    sylius_product_image               sylius_product_image[]
+    sylius_product_options             sylius_product_options[]
+    sylius_product_review              sylius_product_review[]
+    sylius_product_taxon               sylius_product_taxon[]
+    sylius_product_translation         sylius_product_translation[]
+    sylius_product_variant             sylius_product_variant[]
+
+    @@index([main_taxon_id], map: "IDX_677B9B74731E505")
+}
+
+model sylius_product_association {
+    id                                 Int                                  @id @default(autoincrement())
+    association_type_id                Int
+    product_id                         Int
+    created_at                         DateTime                             @db.DateTime(0)
+    updated_at                         DateTime?                            @db.DateTime(0)
+    sylius_product                     sylius_product                       @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_48E9CDAB4584665A")
+    sylius_product_association_type    sylius_product_association_type      @relation(fields: [association_type_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_48E9CDABB1E1C39")
+    sylius_product_association_product sylius_product_association_product[]
+
+    @@unique([product_id, association_type_id], map: "product_association_idx")
+    @@index([product_id], map: "IDX_48E9CDAB4584665A")
+    @@index([association_type_id], map: "IDX_48E9CDABB1E1C39")
+}
+
+model sylius_product_association_product {
+    association_id             Int
+    product_id                 Int
+    sylius_product             sylius_product             @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_A427B9834584665A")
+    sylius_product_association sylius_product_association @relation(fields: [association_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_A427B983EFB9C8A5")
+
+    @@id([association_id, product_id])
+    @@index([product_id], map: "IDX_A427B9834584665A")
+    @@index([association_id], map: "IDX_A427B983EFB9C8A5")
+}
+
+model sylius_product_association_type {
+    id                                          Int                                           @id @default(autoincrement())
+    code                                        String                                        @unique(map: "UNIQ_CCB8914C77153098") @db.VarChar(255)
+    created_at                                  DateTime                                      @db.DateTime(0)
+    updated_at                                  DateTime?                                     @db.DateTime(0)
+    sylius_product_association                  sylius_product_association[]
+    sylius_product_association_type_translation sylius_product_association_type_translation[]
+}
+
+model sylius_product_association_type_translation {
+    id                              Int                             @id @default(autoincrement())
+    translatable_id                 Int
+    name                            String?                         @db.VarChar(255)
+    locale                          String                          @db.VarChar(255)
+    sylius_product_association_type sylius_product_association_type @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_4F618E52C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_product_association_type_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_4F618E52C2AC5D3")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_product_attribute {
+    id                                   Int                                    @id @default(autoincrement())
+    code                                 String                                 @unique(map: "UNIQ_BFAF484A77153098") @db.VarChar(255)
+    type                                 String                                 @db.VarChar(255)
+    storage_type                         String                                 @db.VarChar(255)
+    configuration                        String                                 @db.LongText
+    created_at                           DateTime                               @db.DateTime(0)
+    updated_at                           DateTime?                              @db.DateTime(0)
+    position                             Int
+    translatable                         Boolean                                @default(true)
+    sylius_product_attribute_translation sylius_product_attribute_translation[]
+    sylius_product_attribute_value       sylius_product_attribute_value[]
+}
+
+model sylius_product_attribute_translation {
+    id                       Int                      @id @default(autoincrement())
+    translatable_id          Int
+    name                     String                   @db.VarChar(255)
+    locale                   String                   @db.VarChar(255)
+    sylius_product_attribute sylius_product_attribute @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_93850EBA2C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_product_attribute_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_93850EBA2C2AC5D3")
+}
+
+model sylius_product_attribute_value {
+    id                       Int                      @id @default(autoincrement())
+    product_id               Int
+    attribute_id             Int
+    text_value               String?                  @db.LongText
+    boolean_value            Boolean?
+    integer_value            Int?
+    float_value              Float?
+    datetime_value           DateTime?                @db.DateTime(0)
+    date_value               DateTime?                @db.Date
+    json_value               Json?
+    locale_code              String?                  @db.VarChar(255)
+    sylius_product           sylius_product           @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_8A053E544584665A")
+    sylius_product_attribute sylius_product_attribute @relation(fields: [attribute_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_8A053E54B6E62EFA")
+
+    @@index([product_id], map: "IDX_8A053E544584665A")
+    @@index([attribute_id], map: "IDX_8A053E54B6E62EFA")
+}
+
+model sylius_product_channels {
+    product_id     Int
+    channel_id     Int
+    sylius_product sylius_product @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_F9EF269B4584665A")
+    sylius_channel sylius_channel @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_F9EF269B72F5A1AA")
+
+    @@id([product_id, channel_id])
+    @@index([product_id], map: "IDX_F9EF269B4584665A")
+    @@index([channel_id], map: "IDX_F9EF269B72F5A1AA")
+}
+
+model sylius_product_image {
+    id                                    Int                                     @id @default(autoincrement())
+    owner_id                              Int
+    type                                  String?                                 @db.VarChar(255)
+    path                                  String                                  @db.VarChar(255)
+    sylius_product                        sylius_product                          @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_88C64B2D7E3C61F9")
+    sylius_product_image_product_variants sylius_product_image_product_variants[]
+
+    @@index([owner_id], map: "IDX_88C64B2D7E3C61F9")
+}
+
+model sylius_product_image_product_variants {
+    image_id               Int
+    variant_id             Int
+    sylius_product_variant sylius_product_variant @relation(fields: [variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_8FFDAE8D3B69A9AF")
+    sylius_product_image   sylius_product_image   @relation(fields: [image_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_8FFDAE8D3DA5256D")
+
+    @@id([image_id, variant_id])
+    @@index([variant_id], map: "IDX_8FFDAE8D3B69A9AF")
+    @@index([image_id], map: "IDX_8FFDAE8D3DA5256D")
+}
+
+model sylius_product_option {
+    id                                Int                                 @id @default(autoincrement())
+    code                              String                              @unique(map: "UNIQ_E4C0EBEF77153098") @db.VarChar(255)
+    created_at                        DateTime                            @db.DateTime(0)
+    updated_at                        DateTime?                           @db.DateTime(0)
+    position                          Int
+    sylius_product_option_translation sylius_product_option_translation[]
+    sylius_product_option_value       sylius_product_option_value[]
+    sylius_product_options            sylius_product_options[]
+}
+
+model sylius_product_option_translation {
+    id                    Int                   @id @default(autoincrement())
+    translatable_id       Int
+    name                  String                @db.VarChar(255)
+    locale                String                @db.VarChar(255)
+    sylius_product_option sylius_product_option @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CBA491AD2C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_product_option_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_CBA491AD2C2AC5D3")
+}
+
+model sylius_product_option_value {
+    id                                      Int                                       @id @default(autoincrement())
+    option_id                               Int
+    code                                    String                                    @unique(map: "UNIQ_F7FF7D4B77153098") @db.VarChar(255)
+    sylius_product_option                   sylius_product_option                     @relation(fields: [option_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_F7FF7D4BA7C41D6F")
+    sylius_product_option_value_translation sylius_product_option_value_translation[]
+    sylius_product_variant_option_value     sylius_product_variant_option_value[]
+
+    @@index([option_id], map: "IDX_F7FF7D4BA7C41D6F")
+}
+
+model sylius_product_option_value_translation {
+    id                          Int                         @id @default(autoincrement())
+    translatable_id             Int
+    value                       String                      @db.VarChar(255)
+    locale                      String                      @db.VarChar(255)
+    sylius_product_option_value sylius_product_option_value @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_8D4382DC2C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_product_option_value_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_8D4382DC2C2AC5D3")
+}
+
+model sylius_product_options {
+    product_id            Int
+    option_id             Int
+    sylius_product        sylius_product        @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_2B5FF0094584665A")
+    sylius_product_option sylius_product_option @relation(fields: [option_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_2B5FF009A7C41D6F")
+
+    @@id([product_id, option_id])
+    @@index([product_id], map: "IDX_2B5FF0094584665A")
+    @@index([option_id], map: "IDX_2B5FF009A7C41D6F")
+}
+
+model sylius_product_review {
+    id              Int             @id @default(autoincrement())
+    product_id      Int
+    author_id       Int
+    title           String?         @db.VarChar(255)
+    rating          Int
+    comment         String?         @db.LongText
+    status          String          @db.VarChar(255)
+    created_at      DateTime        @db.DateTime(0)
+    updated_at      DateTime?       @db.DateTime(0)
+    sylius_product  sylius_product  @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_C7056A994584665A")
+    sylius_customer sylius_customer @relation(fields: [author_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_C7056A99F675F31B")
+
+    @@index([product_id], map: "IDX_C7056A994584665A")
+    @@index([author_id], map: "IDX_C7056A99F675F31B")
+}
+
+model sylius_product_taxon {
+    id             Int            @id @default(autoincrement())
+    product_id     Int
+    taxon_id       Int
+    position       Int
+    sylius_product sylius_product @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_169C6CD94584665A")
+    sylius_taxon   sylius_taxon   @relation(fields: [taxon_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_169C6CD9DE13F470")
+
+    @@unique([product_id, taxon_id], map: "product_taxon_idx")
+    @@index([product_id], map: "IDX_169C6CD94584665A")
+    @@index([taxon_id], map: "IDX_169C6CD9DE13F470")
+}
+
+model sylius_product_translation {
+    id                Int            @id @default(autoincrement())
+    translatable_id   Int
+    name              String         @db.VarChar(255)
+    slug              String         @db.VarChar(255)
+    description       String?        @db.LongText
+    meta_keywords     String?        @db.VarChar(255)
+    meta_description  String?        @db.VarChar(255)
+    short_description String?        @db.LongText
+    locale            String         @db.VarChar(255)
+    sylius_product    sylius_product @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_105A9082C2AC5D3")
+
+    @@unique([locale, slug], map: "UNIQ_105A9084180C698989D9B62")
+    @@unique([translatable_id, locale], map: "sylius_product_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_105A9082C2AC5D3")
+}
+
+model sylius_product_variant {
+    id                                    Int                                     @id @default(autoincrement())
+    product_id                            Int
+    tax_category_id                       Int?
+    shipping_category_id                  Int?
+    code                                  String                                  @unique(map: "UNIQ_A29B52377153098") @db.VarChar(255)
+    created_at                            DateTime                                @db.DateTime(0)
+    updated_at                            DateTime?                               @db.DateTime(0)
+    on_hold                               Int
+    on_hand                               Int
+    tracked                               Boolean
+    width                                 Float?
+    height                                Float?
+    depth                                 Float?
+    weight                                Float?
+    position                              Int
+    shipping_required                     Boolean
+    version                               Int                                     @default(1)
+    enabled                               Boolean
+    sylius_channel_pricing                sylius_channel_pricing[]
+    sylius_order_item                     sylius_order_item[]
+    sylius_product_image_product_variants sylius_product_image_product_variants[]
+    sylius_product                        sylius_product                          @relation(fields: [product_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_A29B5234584665A")
+    sylius_tax_category                   sylius_tax_category?                    @relation(fields: [tax_category_id], references: [id], onUpdate: NoAction, map: "FK_A29B5239DF894ED")
+    sylius_shipping_category              sylius_shipping_category?               @relation(fields: [shipping_category_id], references: [id], onUpdate: NoAction, map: "FK_A29B5239E2D1A41")
+    sylius_product_variant_option_value   sylius_product_variant_option_value[]
+    sylius_product_variant_translation    sylius_product_variant_translation[]
+
+    @@index([product_id], map: "IDX_A29B5234584665A")
+    @@index([tax_category_id], map: "IDX_A29B5239DF894ED")
+    @@index([shipping_category_id], map: "IDX_A29B5239E2D1A41")
+}
+
+model sylius_product_variant_option_value {
+    variant_id                  Int
+    option_value_id             Int
+    sylius_product_variant      sylius_product_variant      @relation(fields: [variant_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_76CDAFA13B69A9AF")
+    sylius_product_option_value sylius_product_option_value @relation(fields: [option_value_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_76CDAFA1D957CA06")
+
+    @@id([variant_id, option_value_id])
+    @@index([variant_id], map: "IDX_76CDAFA13B69A9AF")
+    @@index([option_value_id], map: "IDX_76CDAFA1D957CA06")
+}
+
+model sylius_product_variant_translation {
+    id                     Int                    @id @default(autoincrement())
+    translatable_id        Int
+    name                   String?                @db.VarChar(255)
+    locale                 String                 @db.VarChar(255)
+    sylius_product_variant sylius_product_variant @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_8DC18EDC2C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_product_variant_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_8DC18EDC2C2AC5D3")
+}
+
+model sylius_promotion {
+    id                        Int                         @id @default(autoincrement())
+    code                      String                      @unique(map: "UNIQ_F157396377153098") @db.VarChar(255)
+    name                      String                      @db.VarChar(255)
+    description               String?                     @db.VarChar(255)
+    priority                  Int
+    exclusive                 Boolean
+    usage_limit               Int?
+    used                      Int
+    coupon_based              Boolean
+    starts_at                 DateTime?                   @db.DateTime(0)
+    ends_at                   DateTime?                   @db.DateTime(0)
+    created_at                DateTime                    @db.DateTime(0)
+    updated_at                DateTime?                   @db.DateTime(0)
+    applies_to_discounted     Boolean                     @default(true)
+    sylius_promotion_action   sylius_promotion_action[]
+    sylius_promotion_channels sylius_promotion_channels[]
+    sylius_promotion_coupon   sylius_promotion_coupon[]
+    sylius_promotion_order    sylius_promotion_order[]
+    sylius_promotion_rule     sylius_promotion_rule[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_promotion_action {
+    id               Int               @id @default(autoincrement())
+    promotion_id     Int?
+    type             String            @db.VarChar(255)
+    configuration    String            @db.LongText
+    sylius_promotion sylius_promotion? @relation(fields: [promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_933D0915139DF194")
+
+    @@index([promotion_id], map: "IDX_933D0915139DF194")
+}
+
+model sylius_promotion_channels {
+    promotion_id     Int
+    channel_id       Int
+    sylius_promotion sylius_promotion @relation(fields: [promotion_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1A044F64139DF194")
+    sylius_channel   sylius_channel   @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1A044F6472F5A1AA")
+
+    @@id([promotion_id, channel_id])
+    @@index([promotion_id], map: "IDX_1A044F64139DF194")
+    @@index([channel_id], map: "IDX_1A044F6472F5A1AA")
+}
+
+model sylius_promotion_coupon {
+    id                             Int               @id @default(autoincrement())
+    promotion_id                   Int?
+    code                           String            @unique(map: "UNIQ_B04EBA8577153098") @db.VarChar(255)
+    usage_limit                    Int?
+    used                           Int
+    expires_at                     DateTime?         @db.DateTime(0)
+    created_at                     DateTime          @db.DateTime(0)
+    updated_at                     DateTime?         @db.DateTime(0)
+    per_customer_usage_limit       Int?
+    reusable_from_cancelled_orders Boolean           @default(true)
+    sylius_order                   sylius_order[]
+    sylius_promotion               sylius_promotion? @relation(fields: [promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_B04EBA85139DF194")
+
+    @@index([promotion_id], map: "IDX_B04EBA85139DF194")
+}
+
+model sylius_promotion_order {
+    order_id         Int
+    promotion_id     Int
+    sylius_promotion sylius_promotion @relation(fields: [promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_BF9CF6FB139DF194")
+    sylius_order     sylius_order     @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_BF9CF6FB8D9F6D38")
+
+    @@id([order_id, promotion_id])
+    @@index([promotion_id], map: "IDX_BF9CF6FB139DF194")
+    @@index([order_id], map: "IDX_BF9CF6FB8D9F6D38")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_promotion_rule {
+    id               Int               @id @default(autoincrement())
+    promotion_id     Int?
+    type             String            @db.VarChar(255)
+    configuration    String            @db.LongText
+    sylius_promotion sylius_promotion? @relation(fields: [promotion_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_2C188EA8139DF194")
+
+    @@index([promotion_id], map: "IDX_2C188EA8139DF194")
+}
+
+model sylius_province {
+    id             Int            @id @default(autoincrement())
+    country_id     Int
+    code           String         @unique(map: "UNIQ_B5618FE477153098") @db.VarChar(255)
+    name           String         @db.VarChar(255)
+    abbreviation   String?        @db.VarChar(255)
+    sylius_country sylius_country @relation(fields: [country_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_B5618FE4F92F3E70")
+
+    @@unique([country_id, name], map: "UNIQ_B5618FE4F92F3E705E237E06")
+    @@index([country_id], map: "IDX_B5618FE4F92F3E70")
+}
+
+model sylius_shipment {
+    id                     Int                      @id @default(autoincrement())
+    method_id              Int
+    order_id               Int
+    state                  String                   @db.VarChar(255)
+    tracking               String?                  @db.VarChar(255)
+    created_at             DateTime                 @db.DateTime(0)
+    updated_at             DateTime?                @db.DateTime(0)
+    shipped_at             DateTime?                @db.DateTime(0)
+    adjustments_total      Int
+    sylius_adjustment      sylius_adjustment[]
+    sylius_order_item_unit sylius_order_item_unit[]
+    sylius_shipping_method sylius_shipping_method   @relation(fields: [method_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_FD707B3319883967")
+    sylius_order           sylius_order             @relation(fields: [order_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_FD707B338D9F6D38")
+
+    @@index([method_id], map: "IDX_FD707B3319883967")
+    @@index([order_id], map: "IDX_FD707B338D9F6D38")
+}
+
+model sylius_shipping_category {
+    id                     Int                      @id @default(autoincrement())
+    code                   String                   @unique(map: "UNIQ_B1D6465277153098") @db.VarChar(255)
+    name                   String                   @db.VarChar(255)
+    description            String?                  @db.LongText
+    created_at             DateTime                 @db.DateTime(0)
+    updated_at             DateTime?                @db.DateTime(0)
+    sylius_product_variant sylius_product_variant[]
+    sylius_shipping_method sylius_shipping_method[]
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_shipping_method {
+    id                                 Int                                  @id @default(autoincrement())
+    category_id                        Int?
+    zone_id                            Int
+    tax_category_id                    Int?
+    code                               String                               @unique(map: "UNIQ_5FB0EE1177153098") @db.VarChar(255)
+    configuration                      String                               @db.LongText
+    category_requirement               Int
+    calculator                         String                               @db.VarChar(255)
+    is_enabled                         Boolean
+    position                           Int
+    created_at                         DateTime                             @db.DateTime(0)
+    updated_at                         DateTime?                            @db.DateTime(0)
+    archived_at                        DateTime?                            @db.DateTime(0)
+    sylius_shipment                    sylius_shipment[]
+    sylius_shipping_category           sylius_shipping_category?            @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_5FB0EE1112469DE2")
+    sylius_tax_category                sylius_tax_category?                 @relation(fields: [tax_category_id], references: [id], onUpdate: NoAction, map: "FK_5FB0EE119DF894ED")
+    sylius_zone                        sylius_zone                          @relation(fields: [zone_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_5FB0EE119F2C3FAB")
+    sylius_shipping_method_channels    sylius_shipping_method_channels[]
+    sylius_shipping_method_rule        sylius_shipping_method_rule[]
+    sylius_shipping_method_translation sylius_shipping_method_translation[]
+
+    @@index([category_id], map: "IDX_5FB0EE1112469DE2")
+    @@index([tax_category_id], map: "IDX_5FB0EE119DF894ED")
+    @@index([zone_id], map: "IDX_5FB0EE119F2C3FAB")
+}
+
+model sylius_shipping_method_channels {
+    shipping_method_id     Int
+    channel_id             Int
+    sylius_shipping_method sylius_shipping_method @relation(fields: [shipping_method_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_2D9833355F7D6850")
+    sylius_channel         sylius_channel         @relation(fields: [channel_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_2D98333572F5A1AA")
+
+    @@id([shipping_method_id, channel_id])
+    @@index([shipping_method_id], map: "IDX_2D9833355F7D6850")
+    @@index([channel_id], map: "IDX_2D98333572F5A1AA")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_shipping_method_rule {
+    id                     Int                     @id @default(autoincrement())
+    shipping_method_id     Int?
+    type                   String                  @db.VarChar(255)
+    configuration          String                  @db.LongText
+    sylius_shipping_method sylius_shipping_method? @relation(fields: [shipping_method_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_88A0EB655F7D6850")
+
+    @@index([shipping_method_id], map: "IDX_88A0EB655F7D6850")
+}
+
+model sylius_shipping_method_translation {
+    id                     Int                    @id @default(autoincrement())
+    translatable_id        Int
+    name                   String                 @db.VarChar(255)
+    description            String?                @db.VarChar(255)
+    locale                 String                 @db.VarChar(255)
+    sylius_shipping_method sylius_shipping_method @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_2B37DB3D2C2AC5D3")
+
+    @@unique([translatable_id, locale], map: "sylius_shipping_method_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_2B37DB3D2C2AC5D3")
+}
+
+model sylius_shop_billing_data {
+    id             Int             @id @default(autoincrement())
+    company        String?         @db.VarChar(255)
+    tax_id         String?         @db.VarChar(255)
+    country_code   String?         @db.VarChar(255)
+    street         String?         @db.VarChar(255)
+    city           String?         @db.VarChar(255)
+    postcode       String?         @db.VarChar(255)
+    sylius_channel sylius_channel?
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model sylius_shop_user {
+    id                       Int                 @id @default(autoincrement())
+    customer_id              Int                 @unique(map: "UNIQ_7C2B74809395C3F3")
+    username                 String?             @db.VarChar(255)
+    username_canonical       String?             @db.VarChar(255)
+    enabled                  Boolean
+    salt                     String              @db.VarChar(255)
+    password                 String?             @db.VarChar(255)
+    last_login               DateTime?           @db.DateTime(0)
+    password_reset_token     String?             @db.VarChar(255)
+    password_requested_at    DateTime?           @db.DateTime(0)
+    email_verification_token String?             @db.VarChar(255)
+    verified_at              DateTime?           @db.DateTime(0)
+    locked                   Boolean
+    expires_at               DateTime?           @db.DateTime(0)
+    credentials_expire_at    DateTime?           @db.DateTime(0)
+    roles                    String              @db.LongText
+    email                    String?             @db.VarChar(255)
+    email_canonical          String?             @db.VarChar(255)
+    created_at               DateTime            @db.DateTime(0)
+    updated_at               DateTime?           @db.DateTime(0)
+    encoder_name             String?             @db.VarChar(255)
+    sylius_customer          sylius_customer     @relation(fields: [customer_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_7C2B74809395C3F3")
+    sylius_user_oauth        sylius_user_oauth[]
+}
+
+model sylius_tax_category {
+    id                     Int                      @id @default(autoincrement())
+    code                   String                   @unique(map: "UNIQ_221EB0BE77153098") @db.VarChar(255)
+    name                   String                   @db.VarChar(255)
+    description            String?                  @db.LongText
+    created_at             DateTime                 @db.DateTime(0)
+    updated_at             DateTime?                @db.DateTime(0)
+    sylius_product_variant sylius_product_variant[]
+    sylius_shipping_method sylius_shipping_method[]
+    sylius_tax_rate        sylius_tax_rate[]
+}
+
+model sylius_tax_rate {
+    id                  Int                 @id @default(autoincrement())
+    category_id         Int
+    zone_id             Int
+    code                String              @unique(map: "UNIQ_3CD86B2E77153098") @db.VarChar(255)
+    name                String              @db.VarChar(255)
+    amount              Decimal             @db.Decimal(10, 5)
+    included_in_price   Boolean
+    calculator          String              @db.VarChar(255)
+    created_at          DateTime            @db.DateTime(0)
+    updated_at          DateTime?           @db.DateTime(0)
+    start_date          DateTime?           @db.DateTime(0)
+    end_date            DateTime?           @db.DateTime(0)
+    sylius_tax_category sylius_tax_category @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3CD86B2E12469DE2")
+    sylius_zone         sylius_zone         @relation(fields: [zone_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_3CD86B2E9F2C3FAB")
+
+    @@index([category_id], map: "IDX_3CD86B2E12469DE2")
+    @@index([zone_id], map: "IDX_3CD86B2E9F2C3FAB")
+}
+
+model sylius_taxon {
+    id                                                      Int                        @id @default(autoincrement())
+    tree_root                                               Int?
+    parent_id                                               Int?
+    code                                                    String                     @unique(map: "UNIQ_CFD811CA77153098") @db.VarChar(255)
+    tree_left                                               Int
+    tree_right                                              Int
+    tree_level                                              Int
+    position                                                Int
+    created_at                                              DateTime                   @db.DateTime(0)
+    updated_at                                              DateTime?                  @db.DateTime(0)
+    enabled                                                 Boolean
+    sylius_channel                                          sylius_channel[]
+    sylius_product                                          sylius_product[]
+    sylius_product_taxon                                    sylius_product_taxon[]
+    sylius_taxon_sylius_taxon_parent_idTosylius_taxon       sylius_taxon?              @relation("sylius_taxon_parent_idTosylius_taxon", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CFD811CA727ACA70")
+    other_sylius_taxon_sylius_taxon_parent_idTosylius_taxon sylius_taxon[]             @relation("sylius_taxon_parent_idTosylius_taxon")
+    sylius_taxon_sylius_taxon_tree_rootTosylius_taxon       sylius_taxon?              @relation("sylius_taxon_tree_rootTosylius_taxon", fields: [tree_root], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_CFD811CAA977936C")
+    other_sylius_taxon_sylius_taxon_tree_rootTosylius_taxon sylius_taxon[]             @relation("sylius_taxon_tree_rootTosylius_taxon")
+    sylius_taxon_image                                      sylius_taxon_image[]
+    sylius_taxon_translation                                sylius_taxon_translation[]
+
+    @@index([parent_id], map: "IDX_CFD811CA727ACA70")
+    @@index([tree_root], map: "IDX_CFD811CAA977936C")
+}
+
+model sylius_taxon_image {
+    id           Int          @id @default(autoincrement())
+    owner_id     Int
+    type         String?      @db.VarChar(255)
+    path         String       @db.VarChar(255)
+    sylius_taxon sylius_taxon @relation(fields: [owner_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_DBE52B287E3C61F9")
+
+    @@index([owner_id], map: "IDX_DBE52B287E3C61F9")
+}
+
+model sylius_taxon_translation {
+    id              Int          @id @default(autoincrement())
+    translatable_id Int
+    name            String       @db.VarChar(255)
+    slug            String       @db.VarChar(255)
+    description     String?      @db.LongText
+    locale          String       @db.VarChar(255)
+    sylius_taxon    sylius_taxon @relation(fields: [translatable_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_1487DFCF2C2AC5D3")
+
+    @@unique([locale, slug], map: "slug_uidx")
+    @@unique([translatable_id, locale], map: "sylius_taxon_translation_uniq_trans")
+    @@index([translatable_id], map: "IDX_1487DFCF2C2AC5D3")
+}
+
+model sylius_user_oauth {
+    id               Int               @id @default(autoincrement())
+    user_id          Int?
+    provider         String            @db.VarChar(255)
+    identifier       String            @db.VarChar(255)
+    access_token     String?           @db.VarChar(255)
+    refresh_token    String?           @db.VarChar(255)
+    sylius_shop_user sylius_shop_user? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_C3471B78A76ED395")
+
+    @@unique([user_id, provider], map: "user_provider")
+    @@index([user_id], map: "IDX_C3471B78A76ED395")
+}
+
+model sylius_zone {
+    id                     Int                      @id @default(autoincrement())
+    code                   String                   @unique(map: "UNIQ_7BE2258E77153098") @db.VarChar(255)
+    name                   String                   @db.VarChar(255)
+    type                   String                   @db.VarChar(8)
+    scope                  String?                  @db.VarChar(255)
+    sylius_channel         sylius_channel[]
+    sylius_shipping_method sylius_shipping_method[]
+    sylius_tax_rate        sylius_tax_rate[]
+    sylius_zone_member     sylius_zone_member[]
+}
+
+model sylius_zone_member {
+    id          Int          @id @default(autoincrement())
+    belongs_to  Int?
+    code        String       @db.VarChar(255)
+    sylius_zone sylius_zone? @relation(fields: [belongs_to], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "FK_E8B5ABF34B0E929B")
+
+    @@unique([belongs_to, code], map: "UNIQ_E8B5ABF34B0E929B77153098")
+    @@index([belongs_to], map: "IDX_E8B5ABF34B0E929B")
+}

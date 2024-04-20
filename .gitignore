@@ -5,9 +5,9 @@ node_modules
 .cache
 .output
 .data
-.env
 dist
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.env.local

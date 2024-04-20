@@ -23,7 +23,7 @@ lint/tsc: ## Lint project with Typescript
 .PHONY: tests
 tests: ## Run tests
 	@echo "👉 ${GREEN}Testing...${END}"
-	. "$(NVM_DIR)/nvm.sh" && pnpm vitest run
+	. "$(NVM_DIR)/nvm.sh" && nvm exec dotenv -e .env.local pnpm vitest run
 
 .PHONY: Start dev server
 dev: ## Start the dev server with env variables from .env.local

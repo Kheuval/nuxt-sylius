@@ -1,1 +1,1 @@
-Nuxt 3 starter app with Tailwind, Pinia, Eslint, Prettier and Playwright
+Nuxt-powered Sylius

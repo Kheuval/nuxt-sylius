@@ -33,9 +33,7 @@ jobs:
       run: npx playwright install --with-deps
 
     - name: Run Playwright tests
-      run: pnpm vitest run
-      env: 
-        SYLIUS_URL: "https://example.com"
+      run: npx nuxi prepare && pnpm vitest run
    
     - uses: actions/upload-artifact@v3
       if: always()

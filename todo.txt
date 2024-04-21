@@ -1,3 +1,5 @@
 TODO :
 
-Fix le NODE_TLS_REJECT_UNAUTHORIZED=0 dans le .env, c'est un problème de https
+- Fix le NODE_TLS_REJECT_UNAUTHORIZED=0 dans le .env, c'est un problème de https
+- Ajouter Nuxt i18n, faire passer la locale dans les requêtes
+- Créer les pages 404/500

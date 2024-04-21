@@ -1,5 +1,5 @@
-export const formatPrice = (price: number | null): string => {
-  if (null === price) {
+export const formatPrice = (price: number | null | undefined): string => {
+  if (null === price || undefined === price) {
     return "/";
   }
 

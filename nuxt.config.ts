@@ -3,11 +3,26 @@ import { defineNuxtConfig } from "nuxt/config";
 export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ["@pinia/nuxt", "@nuxt/test-utils/module", "@nuxt/image"],
+  nitro: {
+    storage: {
+      cart: {
+        driver: "fsLite",
+        base: "./var/sessions/carts",
+      },
+    },
+  },
   css: ["~/assets/css/main.css"],
   postcss: {
     plugins: {
       tailwindcss: {},
       autoprefixer: {},
+    },
+  },
+  runtimeConfig: {
+    public: {
+      syliusUrl: import.meta.env.SYLIUS_URL || "",
+      syliusApiUrl: import.meta.env.SYLIUS_API_URL || "",
+      syliusMediaUrl: import.meta.env.SYLIUS_MEDIA_URL || "",
     },
   },
   image: {
@@ -21,6 +36,6 @@ export default defineNuxtConfig({
       xxl: 1536,
       "2xl": 1536,
     },
-    domains: [import.meta.env.SYLIUS_URL],
+    domains: [import.meta.env.SYLIUS_URL || ""],
   },
 });

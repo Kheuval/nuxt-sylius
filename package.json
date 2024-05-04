@@ -34,9 +34,14 @@
     "vue": "latest"
   },
   "dependencies": {
+    "@formkit/core": "^1.6.2",
+    "@formkit/i18n": "^1.6.2",
+    "@formkit/nuxt": "^1.6.2",
+    "@formkit/vue": "^1.6.2",
     "@nuxt/image": "1.2.0",
     "@pinia/nuxt": "^0.5.1",
     "@prisma/client": "^5.12.1",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "zod": "^3.23.6"
   }
 }

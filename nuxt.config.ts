@@ -2,7 +2,12 @@ import { defineNuxtConfig } from "nuxt/config";
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
-  modules: ["@pinia/nuxt", "@nuxt/test-utils/module", "@nuxt/image"],
+  modules: [
+    "@pinia/nuxt",
+    "@nuxt/test-utils/module",
+    "@nuxt/image",
+    "@formkit/nuxt",
+  ],
   nitro: {
     storage: {
       cart: {
@@ -12,6 +17,9 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/css/main.css"],
+  formkit: {
+    autoImport: true,
+  },
   postcss: {
     plugins: {
       tailwindcss: {},

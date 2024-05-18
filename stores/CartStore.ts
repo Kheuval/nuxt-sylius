@@ -4,7 +4,6 @@ export const useCartStore = defineStore("cart", () => {
   const cart = ref<Cart>();
 
   const getCartFromStorage = async () => {
-    // @ts-ignore
     cart.value = await $fetch("/api/cart/sync", {
       headers: useRequestHeaders(["cookie"]),
     });

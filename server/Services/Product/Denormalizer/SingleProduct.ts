@@ -30,8 +30,8 @@ export const denormalizeSingleProduct = (
       product.sylius_product.sylius_product_variant.map((variant: any) => ({
         productName: product.name,
         code: variant.code,
-        name: variant.sylius_product_variant_translation[0].name ?? undefined,
-        price: variant.sylius_channel_pricing[0].price ?? undefined,
+        name: variant.sylius_product_variant_translation[0]?.name ?? undefined,
+        price: variant.sylius_channel_pricing[0]?.price ?? undefined,
       }));
   }
 

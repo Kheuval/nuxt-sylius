@@ -28,7 +28,7 @@
 <script lang="ts" setup>
 import AddressForm from "~/components/Form/AddressForm.vue";
 import type { AddressDTO } from "~/form/Validation/AddressForm";
-import { waitForFormUpdate } from "~/server/utils/waitForFormUpdate";
+import { waitForFormUpdate } from "~/utils/waitForFormUpdate";
 
 const { cart } = storeToRefs(useCartStore());
 

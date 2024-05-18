@@ -1,7 +1,7 @@
 <template>
   <div class="grid grid-cols-3 gap-6">
     <div v-for="product in products" :key="product.code">
-      <NuxtLink :to="`/product/${product.slug}`">
+      <NuxtLink :to="localePath(`/product/${product.slug}`)">
         <NuxtImg
           class="w-full object-cover"
           :src="$config.public.syliusMediaUrl + product.imagePath"
@@ -19,5 +19,7 @@
 </template>
 
 <script lang="ts" setup>
+const localePath = useLocalePath();
+
 const { data: products } = await useFetch("/api/product");
 </script>

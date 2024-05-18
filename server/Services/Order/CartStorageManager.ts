@@ -36,6 +36,7 @@ export const useCartStorageManager = () => {
     const syliusCart = await prisma.sylius_order.findUnique({
       where: {
         token_value: cartToken,
+        state: "cart",
       },
       select: {
         id: true,

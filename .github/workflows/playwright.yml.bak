@@ -1,3 +1,4 @@
+# Broken
 name: E2E Tests
 on:
   push:
@@ -29,11 +30,11 @@ jobs:
     - name: Install dependencies
       run: pnpm install
 
-    - name: Install Playwright Browsers
-      run: npx playwright install --with-deps
+    - name: Install Playwright browsers
+      run: pnpm dlx playwright install --with-deps
 
     - name: Run Playwright tests
-      run: npx nuxi prepare && pnpm vitest run
+      run: pnpm dlx nuxi prepare && pnpm vitest run --dir tests
    
     - uses: actions/upload-artifact@v3
       if: always()

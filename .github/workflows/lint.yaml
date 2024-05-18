@@ -18,10 +18,10 @@ jobs:
           cache: "pnpm"
 
       - name: Generate Prisma client
-        run: npx prisma generate    
+        run: pnpm dlx prisma generate    
 
       - name: Lint
         run: 
           pnpm install &&
           pnpm run lint &&
-          npx nuxi typecheck
+          pnpm dlx nuxi typecheck

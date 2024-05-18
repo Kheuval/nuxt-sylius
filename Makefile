@@ -12,13 +12,13 @@ lint: ## Lint project
 
 .PHONY: lint/eslint
 lint/eslint: ## Lint project with Eslint
-	@echo "👉 ${GREEN}Lint${END} with Eslint..."
+	@echo "👉 Lint with Eslint..."
 	. "$(NVM_DIR)/nvm.sh" && nvm exec pnpm run lint
 
 .PHONY: lint/tsc
 lint/tsc: ## Lint project with Typescript
-	@echo "👉 ${GREEN}Checking${END} Typescript types"
-	. "$(NVM_DIR)/nvm.sh" && nvm exec npx nuxi typecheck
+	@echo "👉 Checking Typescript types"
+	. "$(NVM_DIR)/nvm.sh" && nvm exec pnpm dlx nuxi typecheck
 
 .PHONY: tests
 tests: ## Run tests

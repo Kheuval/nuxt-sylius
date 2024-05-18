@@ -12,7 +12,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const { findOneBySlug } = useProductRepository();
-  const product = await findOneBySlug({ slug });
+  const product = await findOneBySlug({ slug, locale: event.context.locale });
 
   if (null === product) {
     throw createError({

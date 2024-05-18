@@ -1,7 +1,10 @@
 <template>
-  <h1>Title</h1>
-  <NuxtLink to="/checkout">Aller au checkout</NuxtLink>
+  <h1>{{ $t("welcome") }}</h1>
+  <NuxtLink :to="localePath('/checkout')">Aller au checkout</NuxtLink>
   <ProductList />
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const localePath = useLocalePath();
+await useConfigureLocale();
+</script>

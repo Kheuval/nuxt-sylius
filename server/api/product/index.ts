@@ -5,5 +5,5 @@ export default defineEventHandler(async (event) => {
 
   const { findLatest } = useProductRepository();
 
-  return await findLatest();
+  return await findLatest({ locale: event.context.locale });
 });

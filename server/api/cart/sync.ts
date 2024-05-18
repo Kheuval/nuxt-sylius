@@ -10,7 +10,10 @@ export default defineEventHandler(async (event) => {
   const cart = await getCartFromStorage(cartToken);
 
   if (!cart) {
-    setCookie(event, "cartToken", "", { expires: new Date("+0") });
+    setCookie(event, "cartToken", "", {
+      expires: new Date("+0"),
+      sameSite: true,
+    });
   }
 
   return cart;

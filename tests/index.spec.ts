@@ -10,6 +10,6 @@ describe("app", async () => {
     await page.goto(url("/"), { waitUntil: "hydration" });
     const title = await page.textContent("h1");
 
-    expect(title).toBe("Title");
+    expect(title).toBe("Bienvenue");
   });
 });

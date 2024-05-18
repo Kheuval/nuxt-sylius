@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@nuxt/test-utils/module",
     "@nuxt/image",
     "@formkit/nuxt",
+    "@nuxtjs/i18n",
   ],
   nitro: {
     storage: {
@@ -45,5 +46,21 @@ export default defineNuxtConfig({
       "2xl": 1536,
     },
     domains: [import.meta.env.SYLIUS_URL || ""],
+  },
+  i18n: {
+    locales: [
+      {
+        code: "fr",
+        file: "fr.ts",
+      },
+      {
+        code: "en",
+        file: "en.ts",
+      },
+    ],
+    lazy: true,
+    langDir: "translations",
+    defaultLocale: "fr",
+    strategy: "prefix",
   },
 });

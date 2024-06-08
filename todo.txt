@@ -1,5 +1,17 @@
 TODO :
 
 - Fix le NODE_TLS_REJECT_UNAUTHORIZED=0 dans le .env, c'est un problème de https
+- Documenter les méthodes, composables, services, utils avec jsdoc
 - Créer les pages 404/500
 - Faire le register/login
+    - stocker le jwt et le refresh dans la session
+    - voir ce repo https://github.com/damien-hl/nuxt3-auth-example
+    - cookie de session avec secure, path /, httpOnly, samesite et le non commençant par __Host- + encryption
+    // À voir avec la session si nécessaire
+    - si remember me, durée du cookie remember me à 31 jours (moins ?), sinon pas de durée (Session par défaut)
+    // À voir avec la session si nécessaire
+    - durée du cookie jwt à 30 min
+    - créer un middleware serveur pour les requêtes authentifiées qui vérifie si on a un jwt, si oui on effectue la requête, si non on appelle la route refresh avec le refresh token et on set 2 nouveaux cookies, puis on effectue la requête
+    - stocker les informations client dans la session comme pour le cart
+    - créer un middleware client pour synchroniser le store avec le storage comme pour le cart
+    - créer un cookie qui contient la clef de storage de la session comme pour le cart

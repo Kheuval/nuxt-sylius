@@ -26,7 +26,7 @@ const modules = defineNuxtConfig({
     storage: {
       cart: {
         driver: "fsLite",
-        base: "./var/sessions/carts",
+        base: resolve("../../var/storage/cart"),
       },
     },
   },

@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     "./src/Addressing",
     "./src/Auth",
   ],
+
   imports: {
     dirs: ["~/**/composables/**"],
   },

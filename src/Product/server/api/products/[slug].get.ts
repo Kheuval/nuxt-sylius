@@ -1,8 +1,6 @@
 import { useProductRepository } from "~/src/Product/server/repository/ProductRepository";
 
 export default defineEventHandler(async (event) => {
-  assertMethod(event, "GET");
-
   const { slug } = getRouterParams(event);
 
   if (!slug) {

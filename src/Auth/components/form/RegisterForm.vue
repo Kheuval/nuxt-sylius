@@ -10,11 +10,10 @@
       <FormKit type="text" name="firstName" label="Prénom" />
       <FormKit type="text" name="lastName" label="Nom" />
     </div>
-    <FormKit type="email" name="email" label="Courriel" />
-    <FormKit type="tel" name="phoneNumber" label="Téléphone" />
+    <FormKit id="email" type="email" name="email" label="Courriel" />
     <FormKit
       type="checkbox"
-      name="newsletter"
+      name="subscribedToNewsletter"
       label="S'abonner à la newsletter"
     />
     <FormKit type="password" name="passwordFirst" label="Mot de passe" />

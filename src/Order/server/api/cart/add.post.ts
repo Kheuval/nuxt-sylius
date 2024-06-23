@@ -1,24 +1,25 @@
+import { useSessionManager } from "~/src/Auth/server/services/SessionManager";
+import type { SessionInterface } from "~/src/Auth/types/SessionInterface";
 import { codeFromIri } from "~/src/Core/utils/codeFromIri";
 import { useCartStorageManager } from "~/src/Order/server/services/CartStorageManager";
 import type { Cart, Item } from "~/src/Order/types/Cart";
 
-const config = useRuntimeConfig();
-
 export default defineEventHandler(async (event) => {
-  assertMethod(event, "POST");
-
+  const { getSession } = useSessionManager();
   const { setCartInStorage } = useCartStorageManager();
+
+  const session = await getSession(event);
 
   const { cart, item, quantity }: { cart: Cart; item: Item; quantity: number } =
     await readBody(event);
 
   if (!cart.tokenValue) {
     // TODO : Error handling
-    await createCart(cart);
+    await createCart(cart, session);
   }
 
   // TODO : Error handling
-  await addItem(cart, item, quantity);
+  await addItem(cart, item, quantity, session);
 
   // TODO : Error handling
   await setCartInStorage(cart);
@@ -34,24 +35,30 @@ export default defineEventHandler(async (event) => {
   setResponseStatus(event, 201);
 });
 
-const createCart = async (cart: Cart) => {
-  const createdCart = await $fetch<{ tokenValue: string }>("/orders", {
-    baseURL: config.public.syliusApiUrl,
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "application/json",
+const createCart = async (cart: Cart, session: SessionInterface | null) => {
+  const createdCart = await apiFetch(session)<{ tokenValue: string }>(
+    "/orders",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: {},
     },
-    body: {},
-  });
+  );
 
   cart.tokenValue = createdCart.tokenValue;
 };
 
-const addItem = async (cart: Cart, item: Item, quantity: number) => {
+const addItem = async (
+  cart: Cart,
+  item: Item,
+  quantity: number,
+  session: SessionInterface | null,
+) => {
   if (item.id) {
-    await $fetch(`/orders/${cart.tokenValue}/items/${item.id}`, {
-      baseURL: config.public.syliusApiUrl,
+    await apiFetch(session)(`/orders/${cart.tokenValue}/items/${item.id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/merge-patch+json",
@@ -65,21 +72,19 @@ const addItem = async (cart: Cart, item: Item, quantity: number) => {
     return;
   }
 
-  const response = await $fetch<{ items: { id: number; variant: string }[] }>(
-    `/orders/${cart.tokenValue}/items`,
-    {
-      baseURL: config.public.syliusApiUrl,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: {
-        productVariant: item.variantCode,
-        quantity,
-      },
+  const response = await apiFetch(session)<{
+    items: { id: number; variant: string }[];
+  }>(`/orders/${cart.tokenValue}/items`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
     },
-  );
+    body: {
+      productVariant: item.variantCode,
+      quantity,
+    },
+  });
 
   const orderItems = response.items.map((item) => ({
     variantCode: codeFromIri(item.variant),

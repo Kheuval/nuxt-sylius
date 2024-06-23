@@ -8,8 +8,7 @@ export const createValidationSchema = () => {
       email: z.string().email(),
       passwordFirst: z.string().min(4),
       passwordSecond: z.string().min(4),
-      newsletter: z.boolean(),
-      phoneNumber: z.string(),
+      subscribedToNewsletter: z.boolean().optional(),
     })
     .refine((data) => data.passwordFirst === data.passwordSecond, {
       message: "Les mots de passe ne sont pas identiques",

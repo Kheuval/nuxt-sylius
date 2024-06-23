@@ -1,10 +1,9 @@
 <template>
   <div>
     Addresse de livraison
-    <!-- Check if a user is logged in for showEmailField value -->
     <AddressForm
       :id="shippingAddressFormId"
-      :showEmailField="true"
+      :showEmailField="!isLoggedIn"
       @update="(data) => (shippingAddressFormData = data as AddressDTO)"
     />
   </div>
@@ -32,6 +31,7 @@ import { waitForFormUpdate } from "~/src/Core/utils/waitForFormUpdate";
 import { useCartStore } from "~/src/Order/stores/CartStore";
 
 const { cart } = storeToRefs(useCartStore());
+const { isLoggedIn } = useUserSession();
 
 definePageMeta({
   middleware: ["checkout"],

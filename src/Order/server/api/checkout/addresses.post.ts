@@ -2,20 +2,21 @@ import {
   type AddressDTO,
   createValidationSchema,
 } from "~/src/Addressing/form/validation/AddressForm";
+import { useSessionManager } from "~/src/Auth/server/services/SessionManager";
 
 export default defineEventHandler(async (event) => {
-  assertMethod(event, "POST");
-
   const {
     shippingAddress,
     billingAddress,
   }: { shippingAddress: AddressDTO; billingAddress: AddressDTO } =
     await readBody(event);
 
-  const countries = await $fetch("/api/country");
+  const { getSession } = useSessionManager();
 
-  // Check if a user is logged in
-  const validationSchema = createValidationSchema(countries /*, !user */);
+  const session = await getSession(event);
+  const countries = await apiFetch(session)("/api/country");
+
+  const validationSchema = createValidationSchema(countries, !session);
 
   try {
     validationSchema.parse(shippingAddress);
@@ -33,7 +34,6 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const config = useRuntimeConfig();
   const cartToken = getCookie(event, "cartToken");
 
   const body: {
@@ -49,8 +49,7 @@ export default defineEventHandler(async (event) => {
     body.email = shippingAddress.email;
   }
 
-  await $fetch(`orders/${cartToken}`, {
-    baseURL: config.public.syliusApiUrl,
+  await apiFetch(session)(`orders/${cartToken}`, {
     method: "PUT",
     body,
   });

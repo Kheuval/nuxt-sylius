@@ -25,6 +25,10 @@ tests: ## Run tests
 	@echo "👉 ${GREEN}Testing...${END}"
 	. "$(NVM_DIR)/nvm.sh" && nvm exec dotenv -e .env.local pnpm vitest run
 
-.PHONY: Start dev server
+.PHONY: dev
 dev: ## Start the dev server with env variables from .env.local
 	. "$(NVM_DIR)/nvm.sh" && nvm exec dotenv -e .env.local pnpm run dev
+
+.PHONY: pri/db/pull
+pri/db/pull: ## Pull database and generate Prisma client
+	. "$(NVM_DIR)/nvm.sh" && nvm exec dotenv -e .env.local pnpm dlx prisma db pull && pnpm dlx prisma generate

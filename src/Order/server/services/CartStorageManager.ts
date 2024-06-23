@@ -2,6 +2,8 @@ import { providePrismaClient } from "~/src/Core/prisma/ClientProvider";
 import type { Cart } from "~/src/Order/types/Cart";
 
 export const useCartStorageManager = () => {
+  const storage = useStorage("cart");
+
   const setCartInStorage = async (cart: Cart): Promise<void> => {
     if (!import.meta.server) {
       throw new Error(
@@ -12,8 +14,6 @@ export const useCartStorageManager = () => {
     if (!cart.tokenValue) {
       throw new Error("A cart token must be present");
     }
-
-    const storage = useStorage("cart");
 
     await storage.setItem(cart.tokenValue, cart);
   };
@@ -42,8 +42,6 @@ export const useCartStorageManager = () => {
         id: true,
       },
     });
-
-    const storage = useStorage("cart");
 
     if (!syliusCart) {
       await storage.removeItem(cartToken);

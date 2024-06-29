@@ -20,4 +20,20 @@ export default defineNuxtConfig({
       },
     },
   },
+  i18n: {
+    locales: [
+      {
+        code: "fr",
+        file: "fr.ts",
+      },
+      {
+        code: "en",
+        file: "en.ts",
+      },
+    ],
+    lazy: true,
+    langDir: "translations",
+    defaultLocale: "fr",
+    strategy: "prefix",
+  },
 });

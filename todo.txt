@@ -3,8 +3,6 @@ TODO :
 - Fix le NODE_TLS_REJECT_UNAUTHORIZED=0 dans le .env, c'est un problème de https
 - Documenter les méthodes, composables, services, utils avec jsdoc
 - Créer des tests unitaires
-- Traductions côté serveur
 - Créer les pages 404/500
 - Gestion des erreurs front
-- Merge des traductions venant des layers
 - Documenter la gestion des erreurs de formulaire

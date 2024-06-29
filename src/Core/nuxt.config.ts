@@ -19,6 +19,7 @@ const modules = defineNuxtConfig({
     "@nuxt/test-utils/module",
     "@nuxt/image",
     "@formkit/nuxt",
+    "nuxt-zod-i18n",
     "@nuxtjs/i18n",
   ],
 
@@ -47,6 +48,10 @@ const modules = defineNuxtConfig({
 
   formkit: {
     autoImport: true,
+  },
+
+  zodI18n: {
+    localeCodesMapping: { "fr-FR": "fr", "en-GB": "en" },
   },
 
   i18n: {

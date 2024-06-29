@@ -43,6 +43,7 @@
     "@nuxt/image": "1.2.0",
     "@pinia/nuxt": "^0.5.1",
     "@prisma/client": "^5.12.1",
+    "nuxt-zod-i18n": "^1.8.0",
     "pinia": "^2.1.7",
     "zod": "^3.23.6"
   },
